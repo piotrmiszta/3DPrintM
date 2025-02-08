@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <sys/epoll.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 #include "list.h"
 #include "logger.h"
@@ -24,9 +25,10 @@ struct web_server_t
     connection_params_t connection_params;
 };
 
-static web_server_err_t web_server_create_connection(web_server_t* server,
-                                                     uint16_t port,
-                                                     uint32_t max_clients_in_que);
+static web_server_err_t
+web_server_create_connection(web_server_t* server,
+                             uint16_t port,
+                             uint32_t max_clients_in_que);
 
 static void* web_server_thread(void* arg);
 static web_server_err_t web_server_set_noblock(int32_t file_descriptor);
@@ -37,10 +39,9 @@ static web_server_err_t web_server_handle_events(int32_t epoll,
                                                  struct epoll_event* events,
                                                  int32_t no_ready_events,
                                                  web_server_t* server);
-static web_server_err_t web_server_accept_client(int32_t epoll, web_server_t* server);
+static web_server_err_t web_server_accept_client(int32_t epoll,
+                                                 web_server_t* server);
 static web_server_err_t web_server_read(client_t* client);
-static web_server_err_t web_server_write(client_t* client);
-
 
 web_server_err_t web_server_alloc(web_server_t** server)
 {
@@ -82,9 +83,10 @@ web_server_err_t web_server_run(web_server_t* server)
     return WEB_SERVER_ERR_SUCCESS;
 }
 
-static web_server_err_t web_server_create_connection(web_server_t* server,
-                                                     uint16_t port,
-                                                     uint32_t max_client_in_que)
+static web_server_err_t
+web_server_create_connection(web_server_t* server,
+                             uint16_t port,
+                             uint32_t max_client_in_que)
 {
     if(NULL == server)
     {
@@ -225,7 +227,10 @@ static web_server_err_t web_server_handle_events(int32_t epoll,
 
             if(events[i].events & EPOLLIN)
             {
-                LOG_DEBUG("Server read");
+                if(web_server_read(client))
+                {
+                    // TODO: disconnect client
+                }
             }
             else if(events[i].events & EPOLLOUT && client->output_valid)
             {
@@ -262,5 +267,19 @@ web_server_accept_client(int32_t epoll, web_server_t* server)
                          client->connection_param.file_descriptor,
                          EPOLLIN);
 
+    return WEB_SERVER_ERR_SUCCESS;
+}
+
+static web_server_err_t web_server_read(client_t* client)
+{
+    char buffer[1024];
+    int32_t fd = client->connection_param.file_descriptor;
+    ssize_t n = read(fd, buffer, sizeof(buffer));
+    if(n <= 0)
+    {
+        LOG_TRACE("Invalid readed value for client %d",
+                  fd);
+    }
+    LOG_DEBUG("Readed message from clients %d", fd);
     return WEB_SERVER_ERR_SUCCESS;
 }
