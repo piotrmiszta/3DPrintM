@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "logger.h"
+
 typedef int32_t web_server_err_t;
 
 #define WEB_SERVER_ERR_SUCCESS      0
@@ -17,9 +19,9 @@ typedef int32_t web_server_err_t;
 #define WEB_SERVER_UNKNOWN_CLIENT   10
 
 #define log_errno()          \
-        fprintf(stderr, "ERROR: %s", strerror(errno))
+        LOG_ERROR("System error, errno = %d, %s", errno, strerror(errno))
 
 #define log_err(err)           \
-        fprintf(stderr, "ERROR: %s", strerror(err))
+        LOG_ERROR("System error, errno = %d, %s", (err), strerror((err)))
 
 #endif
