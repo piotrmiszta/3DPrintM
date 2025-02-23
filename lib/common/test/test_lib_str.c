@@ -74,12 +74,22 @@ static void test_str_tokenizer(void** state)
     assert_null(word.data);
 }
 
+static void test_str_concatenation(void** state)
+{
+    str_t str1 = string_create_from_str_literal("STR1");
+    str_t str2 = string_create_from_str_literal("STR2");
+    str_t str3 = string_create_from_str_literal("STR3");
+    str_t result = string_concatenate(str1, str2, str3, STR_EMPTY());
+    assert_true(string_equal(result, string_create_from_str_literal("STR1STR2STR3")));
+}
+
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_str_cmp),
         cmocka_unit_test(test_str_find),
         cmocka_unit_test(test_str_substring),
         cmocka_unit_test(test_str_tokenizer),
+        cmocka_unit_test(test_str_concatenation),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

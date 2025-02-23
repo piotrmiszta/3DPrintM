@@ -1,8 +1,13 @@
 #include <assert.h>
+#include <stddef.h>
 
 #include "str.h"
 #include "str_view.h"
 #include "err_codes.h"
+
+static_assert(sizeof(str_t) == sizeof(str_view_t));
+static_assert(offsetof(str_t, size) == offsetof(str_view_t, size));
+static_assert(offsetof(str_t, data) == offsetof(str_view_t, data));
 
 str_view_t string_view_create(str_t string)
 {
