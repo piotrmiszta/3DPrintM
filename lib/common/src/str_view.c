@@ -93,4 +93,19 @@ str_view_t string_view_tokenizer_next(str_view_tokenizer_t* tokenizer)
     return (str_view_t) { 0 };
 }
 
-void string_view_tokenizer_reset(str_view_tokenizer_t* tokenizer);
+str_view_t string_view_substr(str_view_t src, int32_t first, int32_t end)
+{
+    str_t string;
+    assert(first < end);
+    if(end < src.size)
+    {
+        return (str_view_t) { .data = (src.data + first),
+                              .size = (end - first + 1) };
+    }
+    return (str_view_t) { 0 };
+}
+
+void string_view_tokenizer_reset(str_view_tokenizer_t* tokenizer)
+{
+    tokenizer->curr_pos = 0;
+}

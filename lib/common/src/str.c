@@ -71,13 +71,7 @@ int32_t string_get_size(str_t src)
 
 str_t string_substr(str_t src, int32_t first, int32_t end)
 {
-    str_t string;
-    assert(first < end);
-    if(end < src.size)
-    {
-        return string_create((src.data + first), end - first + 1);
-    }
-    return (str_t) { 0 };
+    return string_from_string_view(string_view_substr(string_view_create(src), first, end));
 }
 
 str_t string_token(str_t str, str_t delims);

@@ -26,6 +26,7 @@ string_view_tokenizer_init(str_view_t string, str_view_t delims);
 bool string_view_equal(str_view_t a, str_view_t b);
 int32_t string_view_find(str_view_t a, char element);
 str_view_t string_view_tokenizer_next(str_view_tokenizer_t* tokenizer);
+str_view_t string_view_substr(str_view_t src, int32_t first, int32_t end);
 void string_view_tokenizer_reset(str_view_tokenizer_t* tokenizer);
 
 #endif
