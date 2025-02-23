@@ -2,8 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 #include "err_codes.h"
 #include "str.h"
+#include "str_view.h"
 
 str_t string_alloc(uint64_t size)
 {
@@ -32,6 +34,11 @@ str_t string_create(const char* string, uint64_t size)
     return str;
 }
 
+str_t string_from_string_view(str_view_t str_view)
+{
+    return string_create(str_view.data, str_view.size);
+}
+
 void string_free(str_t string)
 {
     free(string.data);
@@ -49,39 +56,12 @@ str_t string_copy(str_t string)
 
 bool string_equal(str_t a, str_t b)
 {
-    if(a.size != b.size)
-    {
-        return false;
-    }
-    const char* a_data = a.data;
-    const char* b_data = b.data;
-    uint32_t size = a.size;
-    while(size--)
-    {
-        if(*a_data++ != *b_data++)
-        {
-            return false;
-        }
-    }
-    return true;
+    return string_view_equal(string_view_create(a), string_view_create(b));
 }
 
 int32_t string_find(str_t src, char value)
 {
-    if(!src.data)
-    {
-        return LIB_COMMON_ERR_PTR;
-    }
-    const char* src_data = src.data;
-
-    for(uint32_t i = 0; i < src.size; i++)
-    {
-        if(*src_data++ == value)
-        {
-            return i;
-        }
-    }
-    return LIB_COMMON_NOT_FOUND;
+    return string_view_find(string_view_create(src), value);
 }
 
 int32_t string_get_size(str_t src)

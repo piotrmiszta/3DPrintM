@@ -3,6 +3,7 @@ set(LIB_COMMON_SRC_DIR "${CMAKE_SOURCE_DIR}/lib/common/src")
 
 add_library(lib_common
                    ${LIB_COMMON_SRC_DIR}/str.c
+                   ${LIB_COMMON_SRC_DIR}/str_view.c
                    ${LIB_COMMON_INCLUDE_DIR}/err_codes.h
                    ${LIB_COMMON_INCLUDE_DIR}/list.h
                    ${LIB_COMMON_INCLUDE_DIR}/str.h

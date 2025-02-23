@@ -4,6 +4,7 @@
 #include <setjmp.h>
 #include <cmocka.h>
 #include <str.h>
+#include <str_view.h>
 #include <err_codes.h>
 
 static void test_str_cmp(void** state)
@@ -50,11 +51,35 @@ static void test_str_substring(void **state)
     string_free(string1);
 }
 
+static void test_str_tokenizer(void** state)
+{
+    (void)state;
+    str_view_t long_string = STRING_VIEW("This is example:with multiple words");
+    str_view_t delims = STRING_VIEW(" :");
+    str_view_tokenizer_t tokenizer = string_view_tokenizer_init(long_string, delims);
+    str_view_t word = string_view_tokenizer_next(&tokenizer);
+    assert_true(string_view_equal(word, STRING_VIEW("This")));
+    word = string_view_tokenizer_next(&tokenizer);
+    assert_true(string_view_equal(word, STRING_VIEW("is")));
+    word = string_view_tokenizer_next(&tokenizer);
+    assert_true(string_view_equal(word, STRING_VIEW("example")));
+    word = string_view_tokenizer_next(&tokenizer);
+    assert_true(string_view_equal(word, STRING_VIEW("with")));
+    word = string_view_tokenizer_next(&tokenizer);
+    assert_true(string_view_equal(word, STRING_VIEW("multiple")));
+    word = string_view_tokenizer_next(&tokenizer);
+    assert_true(string_view_equal(word, STRING_VIEW("words")));
+    word = string_view_tokenizer_next(&tokenizer);
+    assert_int_equal(word.size, 0);
+    assert_null(word.data);
+}
+
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_str_cmp),
         cmocka_unit_test(test_str_find),
         cmocka_unit_test(test_str_substring),
+        cmocka_unit_test(test_str_tokenizer),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
