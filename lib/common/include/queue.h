@@ -1,5 +1,5 @@
-#ifndef WEB_SERVER_QUEUE_H_
-#define WEB_SERVER_QUEUE_H_
+#ifndef LIB_COMMON_QUEUE_H_
+#define LIB_COMMON_QUEUE_H_
 #include "list.h"
 
 typedef list_t queue_t;

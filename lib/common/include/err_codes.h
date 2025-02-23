@@ -1,5 +1,5 @@
-#ifndef WEB_SERVER_ERR_CODES_H_
-#define WEB_SERVER_ERR_CODES_H_
+#ifndef LIB_COMMON_ERR_CODES_H_
+#define LIB_COMMON_ERR_CODES_H_
 
 #include <errno.h>
 #include <stdint.h>
