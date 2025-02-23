@@ -1,5 +1,5 @@
-#ifndef WEB_SERVER_LOGGER_H_
-#define WEB_SERVER_LOGGER_H_
+#ifndef LIB_COMMON_LOGGER_H_
+#define LIB_COMMON_LOGGER_H_
 
 #include <stdio.h>
 

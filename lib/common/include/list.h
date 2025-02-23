@@ -1,5 +1,5 @@
-#ifndef WEB_SERVER_LIST_H_
-#define WEB_SERVER_LIST_H_
+#ifndef LIB_COMMON_LIST_H_
+#define LIB_COMMON_LIST_H_
 
 #include <stdbool.h>
 #include <stddef.h>
