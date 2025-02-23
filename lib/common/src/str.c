@@ -1,9 +1,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "err_codes.h"
 #include "str.h"
 
-str_t string_alloc(uint32_t size)
+str_t string_alloc(uint64_t size)
 {
     str_t string;
     string.data = malloc(sizeof(*string.data) * size);
@@ -20,7 +21,7 @@ str_t string_create_from_str_literal(const char* string)
     return string_create(string, strlen(string));
 }
 
-str_t string_create(const char* string, uint32_t size)
+str_t string_create(const char* string, uint64_t size)
 {
     str_t str = string_alloc(size);
     if(str.data)
@@ -64,7 +65,25 @@ bool string_equal(str_t a, str_t b)
     return true;
 }
 
+int32_t string_find(str_t src, char value)
+{
+    if(!src.data)
+    {
+        return LIB_COMMON_ERR_PTR;
+    }
+    const char* src_data = src.data;
+
+    for(uint32_t i = 0; i < src.size; i++)
+    {
+        if(*src_data++ == value)
+        {
+            return i;
+        }
+    }
+    return LIB_COMMON_NOT_FOUND;
+}
+
+
 str_t string_substr(str_t src, uint32_t first, uint32_t end);
-uint32_t string_find(str_t src, char value);
 
 str_t string_token(str_t str, str_t delims);
