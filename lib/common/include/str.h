@@ -18,8 +18,8 @@ void string_free(str_t string);
 
 bool string_equal(str_t a, str_t b);
 int32_t string_find(str_t src, char value);
-
-str_t string_substr(str_t src, uint32_t first, uint32_t end);
+int32_t string_get_size(str_t src);
+str_t string_substr(str_t src, int32_t first, int32_t end);
 
 str_t string_token(str_t str, str_t delims);
 

@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -83,7 +84,20 @@ int32_t string_find(str_t src, char value)
     return LIB_COMMON_NOT_FOUND;
 }
 
+int32_t string_get_size(str_t src)
+{
+    return src.size;
+}
 
-str_t string_substr(str_t src, uint32_t first, uint32_t end);
+str_t string_substr(str_t src, int32_t first, int32_t end)
+{
+    str_t string;
+    assert(first < end);
+    if(end < src.size)
+    {
+        return string_create((src.data + first), end - first + 1);
+    }
+    return (str_t) { 0 };
+}
 
 str_t string_token(str_t str, str_t delims);

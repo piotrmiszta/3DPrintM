@@ -20,6 +20,7 @@ typedef int32_t web_server_err_t;
 
 #define LIB_COMMON_ERR_PTR          (-1)
 #define LIB_COMMON_NOT_FOUND        (-2)
+#define LIB_COMMON_ERR_RANGE        (-3)
 
 #define log_errno()          \
         LOG_ERROR("System error, errno = %d, %s", errno, strerror(errno))
