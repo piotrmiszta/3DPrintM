@@ -1,0 +1,4 @@
+add_executable(test_web_server_parser test_parser.c)
+target_link_libraries(test_web_server_parser PRIVATE lib_web_server cmocka)
+
+add_test(NAME test_web_server_parser COMMAND test_web_server_parser)
