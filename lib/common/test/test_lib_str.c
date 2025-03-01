@@ -83,6 +83,27 @@ static void test_str_concatenation(void** state)
     assert_true(string_equal(result, string_create_from_str_literal("STR1STR2STR3")));
 }
 
+static void test_str_remove_whitespace(void** state)
+{
+    str_view_t str1 = STRING_VIEW("STR1  ");
+    str_view_t str2 = STRING_VIEW("  STR2");
+    str_view_t str3 = STRING_VIEW("  STR3  ");
+    str_view_t str4 = STRING_VIEW("     ");
+    str_view_t str1_expected = STRING_VIEW("STR1");
+    str_view_t str2_expected = STRING_VIEW("STR2");
+    str_view_t str3_expected = STRING_VIEW("STR3");
+    str_view_t str4_expected = { 0 };
+
+    assert_true(string_view_equal(string_view_remove_trailing_whitespace(str1),
+                                  str1_expected));
+    assert_true(string_view_equal(string_view_remove_leading_whitespace(str2),
+                                  str2_expected));
+    assert_true(string_view_equal(string_view_remove_whitespace(str3),
+                                  str3_expected));
+    assert_true(string_view_equal(string_view_remove_whitespace(str4),
+                                  str4_expected));
+}
+
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_str_cmp),
@@ -90,6 +111,7 @@ int main(void) {
         cmocka_unit_test(test_str_substring),
         cmocka_unit_test(test_str_tokenizer),
         cmocka_unit_test(test_str_concatenation),
+        cmocka_unit_test(test_str_remove_whitespace),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }

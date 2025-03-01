@@ -33,9 +33,22 @@ static void test_darray(void** state)
     darray_deinit(&vector);
 }
 
+static void test_darray_realloc(void** state)
+{
+    darray(int) vector;
+    darray_init(&vector);
+    for(uint32_t i = 0; i < 20; i++)
+    {
+        darray_push_back(&vector, 1);
+    }
+    assert_int_equal(vector.size, 20);
+    assert_int_equal(vector.capacity, 20);
+}
+
 int main(void) {
     const struct CMUnitTest tests[] = {
         cmocka_unit_test(test_darray),
+        cmocka_unit_test(test_darray_realloc),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
