@@ -3,6 +3,22 @@
 
 static web_server_err_t http_header_parse_first_line(http_header_t* header, str_view_t first_line);
 
+static str_view_t http_methods[] =
+{
+    CONST_STRING_VIEW("GET"),
+    CONST_STRING_VIEW("POST"),
+    CONST_STRING_VIEW("HEAD"),
+};
+
+static str_view_t http_version[] =
+{
+    CONST_STRING_VIEW("HTTP/0.9"),
+    CONST_STRING_VIEW("HTTP/1.0"),
+    CONST_STRING_VIEW("HTTP/1.1"),
+    CONST_STRING_VIEW("HTTP/2"),
+    CONST_STRING_VIEW("HTTP/3"),
+};
+
 web_server_err_t http_header_parse(http_header_t* header, str_view_t data)
 {
     str_view_t whitespaces = string_view_create_from_str_literal(" \n\r\t");
@@ -37,11 +53,27 @@ http_header_parse_first_line(http_header_t* header, str_view_t first_line)
     str_view_t url = string_view_tokenizer_next(&tokenizer);
     str_view_t version = string_view_tokenizer_next(&tokenizer);
     str_view_t rest = string_view_tokenizer_next(&tokenizer);
-    assert(string_view_equal(rest, STRING_VIEW("\n")) || string_view_is_empty(rest));
-    /* here should be comparison */
-    header->version = HTTP_HEADER_VERSION_1_1;
+    if( !string_view_equal(rest, STRING_VIEW("\n")) &&
+        !string_view_is_empty(rest))
+    {
+        return WEB_SERVER_PARSER_ERROR;
+    }
+    for(uint32_t i = 0; i < sizeof(http_methods) / sizeof(http_methods[0]); i++)
+    {
+        if(string_view_equal(http_methods[i], method))
+        {
+            header->method = i;
+        }
+    }
+
+    for(uint32_t i = 0; i < sizeof(http_version) / sizeof(http_version[0]); i++)
+    {
+        if(string_view_equal(http_version[i], version))
+        {
+            header->version = i;
+        }
+    }
     header->url = url;
-    header->method = HTTP_HEADER_GET;
     return WEB_SERVER_ERR_SUCCESS;
 }
 

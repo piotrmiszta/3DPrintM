@@ -13,8 +13,11 @@ enum HttpHeaderMethodE {
 };
 
 enum HttpHeaderVersionE {
-    HTTP_HEADER_VERSION_1_0 = 0,
+    HTTP_HEADER_VERSION_0_9 = 0,
+    HTTP_HEADER_VERSION_1_0,
     HTTP_HEADER_VERSION_1_1,
+    HTTP_HEADER_VERSION_2,
+    HTTP_HEADER_VERSION_3,
 };
 
 typedef struct http_header_element_t

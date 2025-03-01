@@ -17,6 +17,7 @@ typedef int32_t web_server_err_t;
 #define WEB_SERVER_ERR_SYS          4
 
 #define WEB_SERVER_UNKNOWN_CLIENT   10
+#define WEB_SERVER_PARSER_ERROR     101
 
 #define LIB_COMMON_ERR_PTR          (-1)
 #define LIB_COMMON_NOT_FOUND        (-2)

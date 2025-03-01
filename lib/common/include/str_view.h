@@ -17,7 +17,8 @@ typedef struct str_view_tokenizer_t
     uint64_t curr_pos;
 }str_view_tokenizer_t;
 
-#define STRING_VIEW(str)    string_view_create_from_str_literal((str))
+#define STRING_VIEW(str)    string_view_create_from_str_literal(str)
+#define CONST_STRING_VIEW(str) {(str), (sizeof((str)) - 1)}
 
 str_view_t string_view_create(str_t string);
 str_view_t string_view_create_from_str_literal(const char* string);
