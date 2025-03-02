@@ -114,3 +114,91 @@ void string_view_tokenizer_reset(str_view_tokenizer_t* tokenizer)
 {
     tokenizer->curr_pos = 0;
 }
+
+int32_t string_view_find_all(str_view_t src, str_view_t elements)
+{
+    if(!src.data)
+    {
+        return LIB_COMMON_ERR_PTR;
+    }
+    const char* src_data = src.data;
+
+    for(uint32_t i = 0; i < src.size; i++)
+    {
+        for(uint32_t j = 0; j < elements.size; j++)
+        {
+            if(*src_data++ == elements.data[j])
+            {
+                return i;
+            }
+        }
+    }
+    return LIB_COMMON_NOT_FOUND;
+}
+
+bool string_view_is_empty(str_view_t str)
+{
+    return (str.data == NULL);
+}
+
+str_view_t string_view_tokenizer_get_rest(const str_view_tokenizer_t* tokenizer)
+{
+    assert(tokenizer);
+    assert(tokenizer->data.data);
+    str_view_t view = {
+        .data = (tokenizer->data.data + tokenizer->curr_pos),
+        .size = (tokenizer->data.size - tokenizer->curr_pos)
+        };
+    return view;
+}
+
+str_view_t string_view_remove_trailing_whitespace(str_view_t str)
+{
+    const char* ptr = str.data;
+    uint64_t size = str.size;
+    ptr += (str.size - 1); // last element
+    while(size)
+    {
+        if(*ptr == ' ' ||
+           *ptr == '\n' ||
+           *ptr == '\r' ||
+           *ptr == '\t')
+        {
+            size--;
+            *ptr--;
+        }
+        else
+        {
+            return (str_view_t) { .data = str.data, .size = size};
+        }
+    }
+    return (str_view_t) {0};
+}
+
+str_view_t string_view_remove_leading_whitespace(str_view_t str)
+{
+    const char* ptr = str.data;
+    uint64_t size = str.size;
+    while(size)
+    {
+        if(*ptr == ' ' ||
+           *ptr == '\n' ||
+           *ptr == '\r' ||
+           *ptr == '\t')
+        {
+            size --;
+            *ptr++;
+        }
+        else
+        {
+            return (str_view_t) { .data = ptr, .size = size};
+        }
+    }
+    return (str_view_t) {0};
+}
+
+str_view_t string_view_remove_whitespace(str_view_t str)
+{
+    str_view_t result = string_view_remove_trailing_whitespace(str);
+    return string_view_remove_leading_whitespace(result);
+}

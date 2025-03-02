@@ -9,6 +9,8 @@
 
 #include "list.h"
 #include "logger.h"
+#include "parser.h"
+#include "str.h"
 #include "types.h"
 #include "web_server.h"
 
@@ -23,6 +25,7 @@ struct web_server_t
     list_t clients; //TODO: implement
     pthread_t thread;
     connection_params_t connection_params;
+    bool run;
 };
 
 static web_server_err_t
@@ -42,6 +45,7 @@ static web_server_err_t web_server_handle_events(int32_t epoll,
 static web_server_err_t web_server_accept_client(int32_t epoll,
                                                  web_server_t* server);
 static web_server_err_t web_server_read(client_t* client);
+static web_server_err_t web_server_remove_client(client_t* client);
 
 web_server_err_t web_server_alloc(web_server_t** server)
 {
@@ -67,7 +71,7 @@ web_server_err_t web_server_free(web_server_t* server)
 web_server_err_t web_server_run(web_server_t* server)
 {
     web_server_err_t err;
-
+    server->run = true;
     err = web_server_create_connection(server, 8080, 5); //TODO: add this to param
     if(err)
     {
@@ -94,6 +98,13 @@ web_server_create_connection(web_server_t* server,
     }
     int32_t fd = socket(AF_INET, SOCK_STREAM, 0);
     if(-1 == fd)
+    {
+        log_errno();
+        return WEB_SERVER_ERR_SYS;
+    }
+    int32_t opt = 1;
+    int32_t ret = setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+    if(ret)
     {
         log_errno();
         return WEB_SERVER_ERR_SYS;
@@ -151,13 +162,13 @@ static void* web_server_thread(void* arg)
     {
         return NULL;
     }
-
     LOG_INFO("Server booted! Waiting for incoming events ... ");
-    while(1)
+    while(server->run)
     {
-        int32_t no_ready_events = epoll_wait(epoll, events, NO_EVENTS, -1);
+        int32_t no_ready_events = epoll_wait(epoll, events, NO_EVENTS, 100);
         web_server_handle_events(epoll, events, no_ready_events, server);
     }
+    return NULL;
 }
 
 static web_server_err_t web_server_set_noblock(int32_t file_descriptor)
@@ -253,6 +264,7 @@ web_server_accept_client(int32_t epoll, web_server_t* server)
     {
         return WEB_SERVER_ERR_ALLOC;
     }
+    memset(client, 0, sizeof(*client));
     client->connection_param.file_descriptor =
         accept(server->connection_params.file_descriptor,
                (struct sockaddr*)&client->connection_param.addr,
@@ -279,7 +291,33 @@ static web_server_err_t web_server_read(client_t* client)
     {
         LOG_TRACE("Invalid readed value for client %d",
                   fd);
+        web_server_remove_client(client);
     }
     LOG_DEBUG("Readed message from clients %d", fd);
+    str_t msg = string_create(buffer, n);
+    parser_add_request(msg);
     return WEB_SERVER_ERR_SUCCESS;
+}
+
+web_server_err_t web_server_close(web_server_t* server)
+{
+    server->run = false;
+    pthread_join(server->thread, NULL);
+    list_t* list = list_first(&server->clients);
+    client_t* client = NULL;
+    while(!list_is_head(&server->clients, list))
+    {
+        list_t* next = list_next(list);
+        client = (client_t*)(list_get_ptr(list, client_t, list));
+        free(client);
+        list = next;
+    }
+    return 0;
+}
+
+static web_server_err_t web_server_remove_client(client_t* client)
+{
+    list_rem_entry(&client->list);
+    close(client->connection_param.file_descriptor);
+    free(client);
 }
