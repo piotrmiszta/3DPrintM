@@ -7,6 +7,7 @@ add_library(lib_web_server ${LIB_WEB_SERVER_INCLUDE_DIR}/parser.h
                    ${LIB_WEB_SERVER_INCLUDE_DIR}/http_header.h
                    ${LIB_WEB_SERVER_SRC_DIR}/http_header.c
                    ${LIB_WEB_SERVER_SRC_DIR}/web_server.c
+                   ${LIB_WEB_SERVER_SRC_DIR}/worker.c
                    ${LIB_WEB_SERVER_SRC_DIR}/parser.c)
 
 set_target_properties(lib_web_server PROPERTIES LINKER_LANGUAGE C)

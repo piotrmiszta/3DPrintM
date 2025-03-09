@@ -1,6 +1,7 @@
 #include "web_server.h"
 #include "logger.h"
 #include "parser.h"
+#include "worker.h"
 #include <unistd.h>
 
 int main(int argc, char* argv[])
@@ -13,10 +14,11 @@ int main(int argc, char* argv[])
     web_server_alloc(&server);
     web_server_run(server);
     parser_boot(2);
-
+    worker_boot(2);
     sleep(10);
     LOG_DEBUG("Starting closing server");
     web_server_close(server);
     parser_close();
+    worker_close();
     web_server_free(server);
 }

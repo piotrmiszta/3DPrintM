@@ -3,7 +3,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include "err_codes.h"
 #include "parser.h"
+#include "worker.h"
 #include "queue.h"
 
 #define PARSER_MAX_NUMBER_OF_REQUESTS   10
@@ -46,6 +48,7 @@ web_server_err_t parser_add_request(str_t request)
     global_info->request_param.requests[*last_element] = request;
     pthread_mutex_unlock(&global_info->request_param.mutex);
     sem_post(&global_info->request_param.queue_full);
+    return WEB_SERVER_ERR_SUCCESS;
 }
 
 web_server_err_t parser_boot(uint32_t no_parser_threads)
@@ -94,9 +97,12 @@ static void* parser_thread(void* arg)
         str_t request = parser_get_request();
         pthread_mutex_unlock(&global_info->request_param.mutex);
         sem_post(&global_info->request_param.queue_empty);
-        LOG_DEBUG("Received request!");
+        LOG_DEBUG("Received request: parser!");
         string_free(request);
+        str_t temporary = string_create_from_str_literal("Req to worker");
+        worker_add_request(temporary);
     }
+    return NULL;
 }
 
 static str_t parser_get_request(void)
